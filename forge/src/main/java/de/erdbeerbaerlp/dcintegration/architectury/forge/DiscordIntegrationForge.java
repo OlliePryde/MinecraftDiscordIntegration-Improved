@@ -23,12 +23,12 @@ import static de.erdbeerbaerlp.dcintegration.common.DiscordIntegration.LOGGER;
 
 @Mod(DiscordIntegrationMod.MOD_ID)
 public final class DiscordIntegrationForge {
-    public DiscordIntegrationForge(IEventBus modEventBus) {
+    public DiscordIntegrationForge() {
         DiscordIntegrationMod.init();
         if (Configuration.instance().general.botToken.equals("INSERT BOT TOKEN HERE")) { //Prevent events when token not set or on client
             LOGGER.error("Please check the config file and set an bot token");
         } else {
-            modEventBus.addListener(this::serverSetup);
+            MinecraftForge.EVENT_BUS.addListener(this::serverSetup);
             MinecraftForge.EVENT_BUS.register(this);
         }
     }
