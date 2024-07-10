@@ -1,11 +1,11 @@
-package de.erdbeerbaerlp.dcintegration.architectury.util.neoforge;
+package de.erdbeerbaerlp.dcintegration.architectury.util.forge;
 
-import de.erdbeerbaerlp.dcintegration.architectury.neoforge.DiscordIntegrationForge;
+import de.erdbeerbaerlp.dcintegration.architectury.forge.DiscordIntegrationForge;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
-import net.neoforged.neoforge.server.permission.PermissionAPI;
+import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraftforge.server.permission.PermissionAPI;
 
 import java.util.UUID;
 

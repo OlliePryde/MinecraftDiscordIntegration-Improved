@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.entities.Role;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.network.Connection;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.players.PlayerList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -47,7 +46,7 @@ public class PlayerManagerMixin {
         if (eventKick != null) {
             final String jsonComp = GsonComponentSerializer.gson().serialize(eventKick).replace("\\\\n", "\n");
             try {
-                final net.minecraft.network.chat.Component comp = net.minecraft.network.chat.Component.Serializer.fromJson(jsonComp, VanillaRegistries.createLookup());
+                final net.minecraft.network.chat.Component comp = net.minecraft.network.chat.Component.Serializer.fromJson(jsonComp);
                 cir.setReturnValue(comp);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -68,7 +67,7 @@ public class PlayerManagerMixin {
     }
 
     @Inject(at = @At(value = "TAIL"), method = "placeNewPlayer")
-    private void onPlayerJoin(Connection connection, ServerPlayer p, CommonListenerCookie commonListenerCookie, CallbackInfo ci) {
+    private void onPlayerJoin(Connection connection, ServerPlayer p, CallbackInfo ci) {
         if (DiscordIntegration.INSTANCE != null) {
             if (LinkManager.isPlayerLinked(p.getUUID()) && LinkManager.getLink(null, p.getUUID()).settings.hideFromDiscord)
                 return;

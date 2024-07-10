@@ -1,5 +1,6 @@
 package de.erdbeerbaerlp.dcintegration.architectury.util;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dcshadow.com.vdurmont.emoji.EmojiParser;
 import dcshadow.net.kyori.adventure.text.Component;
@@ -64,7 +65,7 @@ public class ArchitecturyServerInterface implements McServerInterface{
                 if (!DiscordIntegration.INSTANCE.ignoringPlayers.contains(p.getUUID()) && !(LinkManager.isPlayerLinked(p.getUUID()) && LinkManager.getLink(null, p.getUUID()).settings.ignoreDiscordChatIngame)) {
                     final Map.Entry<Boolean, Component> ping = ComponentUtils.parsePing(msg, p.getUUID(), p.getName().getString());
                     final String jsonComp = GsonComponentSerializer.gson().serialize(ping.getValue()).replace("\\\\n", "\n");
-                    final net.minecraft.network.chat.Component comp = net.minecraft.network.chat.Component.Serializer.fromJson(jsonComp, p.level().registryAccess());
+                    final net.minecraft.network.chat.Component comp = net.minecraft.network.chat.Component.Serializer.fromJson(jsonComp);
                     p.sendSystemMessage(comp, false);
                     if (ping.getKey()) {
                         if (LinkManager.isPlayerLinked(p.getUUID())&&LinkManager.getLink(null, p.getUUID()).settings.pingSound) {
@@ -75,7 +76,7 @@ public class ArchitecturyServerInterface implements McServerInterface{
             }
             //Send to server console too
             final String jsonComp = GsonComponentSerializer.gson().serialize(msg).replace("\\\\n", "\n");
-            final net.minecraft.network.chat.Component comp = net.minecraft.network.chat.Component.Serializer.fromJson(jsonComp, VanillaRegistries.createLookup());
+            final net.minecraft.network.chat.Component comp = net.minecraft.network.chat.Component.Serializer.fromJson(jsonComp);
             server.sendSystemMessage(comp);
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,7 +119,7 @@ public class ArchitecturyServerInterface implements McServerInterface{
     private void sendReactionMCMessage(ServerPlayer target, Component msgComp) {
         final String jsonComp = GsonComponentSerializer.gson().serialize(msgComp).replace("\\\\n", "\n");
         try {
-            final net.minecraft.network.chat.Component comp = net.minecraft.network.chat.Component.Serializer.fromJson(jsonComp,target.level().registryAccess());
+            final net.minecraft.network.chat.Component comp = net.minecraft.network.chat.Component.Serializer.fromJson(jsonComp);
             target.sendSystemMessage(comp, false);
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,7 +158,7 @@ public class ArchitecturyServerInterface implements McServerInterface{
 
     @Override
     public String getNameFromUUID(UUID uuid) {
-        return server.getSessionService().fetchProfile(uuid,false).profile().getName();
+        return server.getSessionService().fillProfileProperties(new GameProfile(uuid,null),false).getName();
     }
     @Override
     public boolean playerHasPermissions(UUID player, String... permissions) {

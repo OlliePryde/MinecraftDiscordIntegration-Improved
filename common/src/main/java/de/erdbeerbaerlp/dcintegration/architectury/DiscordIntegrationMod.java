@@ -186,7 +186,7 @@ public final class DiscordIntegrationMod {
 
         final PlayerChatMessage finalMessage = message;
         final String text = MessageUtils.escapeMarkdown(message.decoratedContent().getString());
-        final MessageEmbed embed = ArchitecturyMessageUtils.genItemStackEmbedIfAvailable(message.decoratedContent(), player.level());
+        final MessageEmbed embed = ArchitecturyMessageUtils.genItemStackEmbedIfAvailable(message.decoratedContent());
         if (DiscordIntegration.INSTANCE != null) {
             if (DiscordIntegration.INSTANCE.callEvent((e) -> {
                 if (e instanceof ArchitecturyDiscordEventHandler) {
@@ -200,7 +200,7 @@ public final class DiscordIntegrationMod {
             if (channel == null) {
                 return message;
             }
-            final String json = net.minecraft.network.chat.Component.Serializer.toJson(message.decoratedContent(), player.level().registryAccess());
+            final String json = net.minecraft.network.chat.Component.Serializer.toJson(message.decoratedContent());
 
             final Component comp = GsonComponentSerializer.gson().deserialize(json);
             if(INSTANCE.callEvent((e)->e.onMinecraftMessage(comp, player.getUUID()))){
@@ -233,7 +233,7 @@ public final class DiscordIntegrationMod {
 
             if (!Configuration.instance().compatibility.disableParsingMentionsIngame) {
                 final String editedJson = GsonComponentSerializer.gson().serialize(MessageUtils.mentionsToNames(comp, channel.getGuild()));
-                final MutableComponent txt = net.minecraft.network.chat.Component.Serializer.fromJson(editedJson,player.level().registryAccess());
+                final MutableComponent txt = net.minecraft.network.chat.Component.Serializer.fromJson(editedJson);
                 message = message.withUnsignedContent(txt);
             }
         }

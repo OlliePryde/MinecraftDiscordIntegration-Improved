@@ -10,7 +10,6 @@ import de.erdbeerbaerlp.dcintegration.common.util.TextColors;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,13 +29,12 @@ public class AdvancementMixin {
     @Shadow
     private ServerPlayer player;
 
-    @Inject(method = "award", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerAdvancements;markForVisibilityUpdate(Lnet/minecraft/advancements/AdvancementHolder;)V"))
-    public void advancement(AdvancementHolder advancementEntry, String criterionName, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "award", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerAdvancements;markForVisibilityUpdate(Lnet/minecraft/advancements/Advancement;)V"))
+    public void advancement(Advancement advancement, String string, CallbackInfoReturnable<Boolean> cir) {
         if (DiscordIntegration.INSTANCE == null) return;
-        final Advancement advancement = advancementEntry.value();
         if (LinkManager.isPlayerLinked(player.getUUID()) && LinkManager.getLink(null, player.getUUID()).settings.hideFromDiscord)
             return;
-        if (advancement != null && advancement.display().isPresent() && advancement.display().get().shouldAnnounceChat()) {
+        if (advancement != null && advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceChat()) {
 
             if (!Localization.instance().advancementMessage.isBlank()) {
                 if (Configuration.instance().embedMode.enabled && Configuration.instance().embedMode.advancementMessage.asEmbed) {
@@ -48,10 +46,10 @@ public class AdvancementMixin {
                                 .replace("%name%", ArchitecturyMessageUtils.formatPlayerName(player))
                                 .replace("%randomUUID%", UUID.randomUUID().toString())
                                 .replace("%avatarURL%", avatarURL)
-                                .replace("%advName%", ChatFormatting.stripFormatting(advancement.display().get().getTitle().getString()))
-                                .replace("%advDesc%", ChatFormatting.stripFormatting(advancement.display().get().getDescription().getString()))
-                                .replace("%advNameURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.display().get().getTitle().getString()), StandardCharsets.UTF_8))
-                                .replace("%advDescURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.display().get().getDescription().getString()), StandardCharsets.UTF_8))
+                                .replace("%advName%", ChatFormatting.stripFormatting(advancement.getDisplay().getTitle().getString()))
+                                .replace("%advDesc%", ChatFormatting.stripFormatting(advancement.getDisplay().getDescription().getString()))
+                                .replace("%advNameURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.getDisplay().getTitle().getString()), StandardCharsets.UTF_8))
+                                .replace("%advDescURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.getDisplay().getDescription().getString()), StandardCharsets.UTF_8))
                                 .replace("%avatarURL%", avatarURL)
                                 .replace("%playerColor%", "" + TextColors.generateFromUUID(player.getUUID()).getRGB())
                         );
@@ -63,17 +61,17 @@ public class AdvancementMixin {
                                                 ChatFormatting.stripFormatting(ArchitecturyMessageUtils.formatPlayerName(player)))
                                         .replace("%advName%",
                                                 ChatFormatting.stripFormatting(advancement
-                                                        .display().get()
+                                                        .getDisplay()
                                                         .getTitle()
                                                         .getString()))
                                         .replace("%advDesc%",
                                                 ChatFormatting.stripFormatting(advancement
-                                                        .display().get()
+                                                        .getDisplay()
                                                         .getDescription()
                                                         .getString()))
                                         .replace("\\n", "\n")
-                                        .replace("%advNameURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.display().get().getTitle().getString()), StandardCharsets.UTF_8))
-                                        .replace("%advDescURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.display().get().getDescription().getString()), StandardCharsets.UTF_8))
+                                        .replace("%advNameURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.getDisplay().getTitle().getString()), StandardCharsets.UTF_8))
+                                        .replace("%advDescURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.getDisplay().getDescription().getString()), StandardCharsets.UTF_8))
                                 );
                         DiscordIntegration.INSTANCE.sendMessage(new DiscordMessage(b.build()),INSTANCE.getChannel(Configuration.instance().advanced.serverChannelID));
                     }
@@ -82,16 +80,16 @@ public class AdvancementMixin {
                                     ChatFormatting.stripFormatting(ArchitecturyMessageUtils.formatPlayerName(player)))
                             .replace("%advName%",
                                     ChatFormatting.stripFormatting(advancement
-                                            .display().get()
+                                            .getDisplay()
                                             .getTitle()
                                             .getString()))
                             .replace("%advDesc%",
                                     ChatFormatting.stripFormatting(advancement
-                                            .display().get()
+                                            .getDisplay()
                                             .getDescription()
                                             .getString()))
-                            .replace("%advNameURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.display().get().getTitle().getString()), StandardCharsets.UTF_8))
-                            .replace("%advDescURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.display().get().getDescription().getString()), StandardCharsets.UTF_8))
+                            .replace("%advNameURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.getDisplay().getTitle().getString()), StandardCharsets.UTF_8))
+                            .replace("%advDescURL%", URLEncoder.encode(ChatFormatting.stripFormatting(advancement.getDisplay().getDescription().getString()), StandardCharsets.UTF_8))
                             .replace("\\n", "\n"),INSTANCE.getChannel(Configuration.instance().advanced.serverChannelID));
             }
         }
