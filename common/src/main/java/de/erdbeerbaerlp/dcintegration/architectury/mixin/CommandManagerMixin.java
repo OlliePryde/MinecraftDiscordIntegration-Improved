@@ -78,7 +78,7 @@ public class CommandManagerMixin {
                                     source.sendFailure(Component.literal(Localization.instance().commands.consoleOnly));
                                 } catch (CommandSyntaxException e) {
                                     final String txt = GsonComponentSerializer.gson().serialize(mcSubCommand.execute(cmdArgs, null));
-                                    source.sendSuccess(() -> Component.Serializer.fromJson(txt), false);
+                                    source.sendSuccess(Component.Serializer.fromJson(txt), false);
                                 }
                                 break;
                             case PLAYER_ONLY:
@@ -86,13 +86,13 @@ public class CommandManagerMixin {
                                     final ServerPlayer player = source.getPlayerOrException();
                                     if (!mcSubCommand.needsOP() && ((ArchitecturyServerInterface) DiscordIntegration.INSTANCE.getServerInterface()).playerHasPermissions(player, MinecraftPermission.RUN_DISCORD_COMMAND, MinecraftPermission.USER)) {
                                         final String txt = GsonComponentSerializer.gson().serialize(mcSubCommand.execute(cmdArgs, player.getUUID()));
-                                        source.sendSuccess(() -> Component.Serializer.fromJson(txt), false);
+                                        source.sendSuccess(Component.Serializer.fromJson(txt), false);
                                     } else if (((ArchitecturyServerInterface) DiscordIntegration.INSTANCE.getServerInterface()).playerHasPermissions(player, MinecraftPermission.RUN_DISCORD_COMMAND_ADMIN)) {
                                         final String txt = GsonComponentSerializer.gson().serialize(mcSubCommand.execute(cmdArgs, player.getUUID()));
-                                        source.sendSuccess(() -> Component.Serializer.fromJson(txt), false);
+                                        source.sendSuccess( Component.Serializer.fromJson(txt), false);
                                     } else if (source.hasPermission(4)) {
                                         final String txt = GsonComponentSerializer.gson().serialize(mcSubCommand.execute(cmdArgs, player.getUUID()));
-                                        source.sendSuccess(() -> Component.Serializer.fromJson(txt), false);
+                                        source.sendSuccess( Component.Serializer.fromJson(txt), false);
                                     } else {
                                         source.sendFailure(Component.literal(Localization.instance().commands.noPermission));
                                     }
@@ -106,19 +106,19 @@ public class CommandManagerMixin {
                                     final ServerPlayer player = source.getPlayerOrException();
                                     if (!mcSubCommand.needsOP() && ((ArchitecturyServerInterface) DiscordIntegration.INSTANCE.getServerInterface()).playerHasPermissions(player, MinecraftPermission.RUN_DISCORD_COMMAND, MinecraftPermission.USER)) {
                                         final String txt = GsonComponentSerializer.gson().serialize(mcSubCommand.execute(cmdArgs, player.getUUID()));
-                                        source.sendSuccess(() -> Component.Serializer.fromJson(txt), false);
+                                        source.sendSuccess( Component.Serializer.fromJson(txt), false);
                                     } else if (((ArchitecturyServerInterface) DiscordIntegration.INSTANCE.getServerInterface()).playerHasPermissions(player, MinecraftPermission.RUN_DISCORD_COMMAND_ADMIN)) {
                                         final String txt = GsonComponentSerializer.gson().serialize(mcSubCommand.execute(cmdArgs, player.getUUID()));
-                                        source.sendSuccess(() -> Component.Serializer.fromJson(txt), false);
+                                        source.sendSuccess(Component.Serializer.fromJson(txt), false);
                                     } else if (source.hasPermission(4)) {
                                         final String txt = GsonComponentSerializer.gson().serialize(mcSubCommand.execute(cmdArgs, player.getUUID()));
-                                        source.sendSuccess(() -> Component.Serializer.fromJson(txt), false);
+                                        source.sendSuccess( Component.Serializer.fromJson(txt), false);
                                     } else {
                                         source.sendFailure(Component.literal(Localization.instance().commands.noPermission));
                                     }
                                 } catch (CommandSyntaxException e) {
                                     final String txt = GsonComponentSerializer.gson().serialize(mcSubCommand.execute(cmdArgs, null));
-                                    source.sendSuccess(() -> Component.Serializer.fromJson(txt), false);
+                                    source.sendSuccess(Component.Serializer.fromJson(txt), false);
                                 }
                                 break;
                         }
