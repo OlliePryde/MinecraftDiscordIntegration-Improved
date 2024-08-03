@@ -3,14 +3,18 @@ package de.erdbeerbaerlp.dcintegration.architectury.mixin;
 import com.mojang.authlib.GameProfile;
 import dcshadow.net.kyori.adventure.text.Component;
 import dcshadow.net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import de.erdbeerbaerlp.dcintegration.architectury.DiscordIntegrationMod;
 import de.erdbeerbaerlp.dcintegration.architectury.util.ArchitecturyMessageUtils;
+import de.erdbeerbaerlp.dcintegration.architectury.util.ArchitecturyServerInterface;
 import de.erdbeerbaerlp.dcintegration.common.DiscordIntegration;
 import de.erdbeerbaerlp.dcintegration.common.WorkThread;
 import de.erdbeerbaerlp.dcintegration.common.compat.FloodgateUtils;
 import de.erdbeerbaerlp.dcintegration.common.storage.Configuration;
 import de.erdbeerbaerlp.dcintegration.common.storage.Localization;
 import de.erdbeerbaerlp.dcintegration.common.storage.linking.LinkManager;
+import de.erdbeerbaerlp.dcintegration.common.storage.linking.PlayerLink;
 import de.erdbeerbaerlp.dcintegration.common.util.DiscordMessage;
+import de.erdbeerbaerlp.dcintegration.common.util.McServerInterface;
 import de.erdbeerbaerlp.dcintegration.common.util.TextColors;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -70,8 +74,18 @@ public class PlayerManagerMixin {
     @Inject(at = @At(value = "TAIL"), method = "placeNewPlayer")
     private void onPlayerJoin(Connection connection, ServerPlayer p, CommonListenerCookie commonListenerCookie, CallbackInfo ci) {
         if (DiscordIntegration.INSTANCE != null) {
-            if (LinkManager.isPlayerLinked(p.getUUID()) && LinkManager.getLink(null, p.getUUID()).settings.hideFromDiscord)
-                return;
+            if (LinkManager.isPlayerLinked(p.getUUID()))
+            {
+                final PlayerLink link = LinkManager.getLink(null, p.getUUID());
+
+                // Set user's nickname to their discord name
+                final String mcUsername = DiscordIntegration.INSTANCE.getServerInterface().getNameFromUUID(p.getUUID());
+                final String discordUsername = DiscordIntegration.INSTANCE.getMemberById(link.discordID).getEffectiveName();
+                DiscordIntegration.INSTANCE.getServerInterface().runMCCommand(String.format("styled-nicknames set %s %s", mcUsername, discordUsername));
+
+                if (link.settings.hideFromDiscord) return;
+            }
+
             LinkManager.checkGlobalAPI(p.getUUID());
             if (!Localization.instance().playerJoin.isBlank()) {
                 if (Configuration.instance().embedMode.enabled && Configuration.instance().embedMode.playerJoinMessage.asEmbed) {
